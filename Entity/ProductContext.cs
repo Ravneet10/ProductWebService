@@ -9,22 +9,22 @@ namespace Entity
 	public class ProductContext :DbContext,IProductContext
 	{
         public virtual System.Data.Entity.IDbSet<ProductEntity> Products { get; set; }
-        public DbSet<ProductEntity> Users { get; set; }
+        public DbSet<ProductEntity> Product { get; set; }
 
         public ProductContext(DbContextOptions<ProductContext> options) : base(options)
         {
-            LoadDefaultUsers();
+            LoadDefaultProducts();
         }
 
-        public List<ProductEntity> getUsers() => Users.Local.ToList<ProductEntity>();
+        public List<ProductEntity> getProducts() => Product.Local.ToList<ProductEntity>();
         public Task<int> SaveChangesAsync()
         {
             return base.SaveChangesAsync();
         }
-        private void LoadDefaultUsers()
+        private void LoadDefaultProducts()
         {
-            Users.Add(new ProductEntity { Id = Guid.Parse("100L"), Name = "Tom" });
-            Users.Add(new ProductEntity { Id = Guid.Parse("200L"), Name = "Arthur" });
+            Product.Add(new ProductEntity { Id = Guid.Parse("B662E56A-067D-4BF6-AB78-A97C005C373A"), Name = "Tom", Description="test" });
+            Product.Add(new ProductEntity { Id = Guid.Parse("1466881F-24B0-4378-992E-A97C0066445C"), Name = "Arthur", Description="test" });
         }
 	}
 }

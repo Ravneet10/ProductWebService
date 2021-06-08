@@ -12,14 +12,14 @@ namespace ProductWebService.Handlers
 {
     public class GetProductQueryHandler : IRequestHandler<GetProductQuery, List<ProductDto>>
     {
-        private readonly ProductContext _productContext;
-        public GetProductQueryHandler(ProductContext productContext)
+        private readonly IProductContext _productContext;
+        public GetProductQueryHandler(IProductContext productContext)
         {
             _productContext = productContext;
         }
         public Task<List<ProductDto>> Handle(GetProductQuery request, CancellationToken cancellationToken)
         {
-            var products = _productContext.getUsers().ToList();
+            var products = _productContext.getProducts().ToList();
             return Task.FromResult(products.Select(i => new ProductDto()
             {
                 Id = i.Id,

@@ -10,5 +10,6 @@ namespace Entity
     {
         IDbSet<ProductEntity> Products { get; set; }
         Task<int> SaveChangesAsync();
+        List<ProductEntity> getProducts();
     }
 }
