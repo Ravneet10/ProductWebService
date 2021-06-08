@@ -6,6 +6,7 @@ using ProductWebService.Queries;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
+using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -27,6 +28,7 @@ namespace ProductServiceTest
             CreateProducts();
             _getProductQueryHandler = CreateQueryHandler();
         }
+       
         protected void CreateProducts()
         {
             var product = new List<ProductEntity>();
