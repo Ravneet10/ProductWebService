@@ -12,6 +12,7 @@ using Microsoft.Extensions.Hosting;
 using ProductWebService.Command;
 using ProductWebService.Handlers;
 using ProductWebService.Controllers;
+using Autofac.Extensions.DependencyInjection;
 
 namespace ProductWebService
 {
@@ -23,11 +24,10 @@ namespace ProductWebService
         }
 
         public IConfiguration Configuration { get; }
-
+        public ILifetimeScope AutofacContainer { get; private set; }
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            var container = CreateContainer();
             services.AddTransient<ICommandBus, CommandBus>();
             services.AddDbContext<ProductContext>(opts =>
             opts.UseInMemoryDatabase("userDB"));
@@ -35,6 +35,7 @@ namespace ProductWebService
             services.AddMvc().AddControllersAsServices();
             services.AddMediatR(Assembly.GetExecutingAssembly());
             services.AddAutoMapper(typeof(Startup));
+            services.AddOptions();
         }
         private void RegisterCommandBus(ContainerBuilder builder)
         {
@@ -43,9 +44,8 @@ namespace ProductWebService
             var commandBusModule = new QueueCommandBusModule(serviceName, commandHandlersAssembly);
             builder.RegisterModule(commandBusModule);
         }
-        public IContainer CreateContainer()
+        public void CreateContainer(ContainerBuilder builder)
         {
-            var builder = new ContainerBuilder();
             RegisterCommandBus(builder);
             builder
                 .RegisterType<ProductContext>()
@@ -53,12 +53,20 @@ namespace ProductWebService
                 .WithParameter(new TypedParameter(typeof(Action<string>), ""))
                 .WithParameter(new TypedParameter(typeof(string), ""));
 
-            return builder.Build();
         }
+        public void ConfigureContainer(ContainerBuilder builder)
+        {
+            // Register your own things directly with Autofac here. Don't
+            // call builder.Populate(), that happens in AutofacServiceProviderFactory
+            // for you.
+            CreateContainer(builder);
+        }
+
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            this.AutofacContainer = app.ApplicationServices.GetAutofacRoot();
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
